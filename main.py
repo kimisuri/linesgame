@@ -1,4 +1,6 @@
 import pygame as pg
+import sys
+import os
 from random import randint
 
 WIN_SIZE = (600, 600)
@@ -12,8 +14,89 @@ COLORS = [
     (54, 224, 71),
     (229, 232, 49)
 ]
+FPS = 50
+pg.init()
+size = WIDTH, HEIGHT = 600, 600
+screen = pg.display.set_mode(size)
+FPS = 50
+clock = pg.time.Clock()
 
+def terminate():
+    pg.quit()
+    sys.exit()
 
+def load_image(name, colorkey=None):
+    fullname = os.path.join('Data', name)
+    if not os.path.isfile(fullname):
+        print(f"Файл с изображением '{fullname}' не найден")
+        sys.exit()
+    image = pg.image.load(fullname)
+    return image
+
+def end_screen(points):
+    pg.display.set_caption('the end')
+    intro_text = [f'Your points: {points}', " ",
+                  "\t \t GAME OVER",
+                  " ",
+                  "[PRESS ANY BUTTON TO REPLAY]"]
+    fon = pg.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
+    screen.blit(fon, (0, 0))
+    font = pg.font.Font(None, 33)
+    text_coord = 50
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pg.Color('white'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 170
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                terminate()
+            elif event.type == pg.KEYDOWN or \
+                    event.type == pg.MOUSEBUTTONDOWN:
+                return  # начинаем игру
+        pg.display.flip()
+        clock.tick(FPS)
+
+def start_screen():
+    pg.display.set_caption('hello hello')
+    intro_text = ["ЗАСТАВКА", "",
+                  "",
+                  "",
+                  "[PRESS ANY BUTTON TO START]"]
+    fon = pg.transform.scale(load_image('fon.jpg'), (WIDTH, HEIGHT))
+    screen.blit(fon, (0, 0))
+    font = pg.font.Font(None, 33)
+    text_coord = 50
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pg.Color('white'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 170
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    while True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                terminate()
+            elif event.type == pg.KEYDOWN or \
+                    event.type == pg.MOUSEBUTTONDOWN:
+                return  # начинаем игру
+        pg.display.flip()
+        clock.tick(FPS)
+
+start_screen()
+
+screen.fill(pg.Color(0, 0, 0))
+pg.display.flip()
+clock.tick(FPS)
+###
 class Lines:
     def __init__(self):
         pg.init()
@@ -154,8 +237,14 @@ class Lines:
         self.check_lines()
 
         if not any([any([cell['color'] == 0 for cell in row]) for row in self.cells_matrix]):
-            self.running = False
-            print('Game over!!!')
+
+            end_screen(self.player_points)
+            self.set_matrix()
+            self.add_circles_to_matrix()
+            self.is_circle_active = False
+            self.active_circle_color = None
+            self.active_circle_coords = None
+            self.player_points = 0
 
     def add_circles_to_matrix(self):
         for _ in range(3):

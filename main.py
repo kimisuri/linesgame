@@ -21,9 +21,11 @@ screen = pg.display.set_mode(size)
 FPS = 50
 clock = pg.time.Clock()
 
+
 def terminate():
     pg.quit()
     sys.exit()
+
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('Data', name)
@@ -32,6 +34,7 @@ def load_image(name, colorkey=None):
         sys.exit()
     image = pg.image.load(fullname)
     return image
+
 
 def end_screen(points):
     pg.display.set_caption('the end')
@@ -62,9 +65,10 @@ def end_screen(points):
         pg.display.flip()
         clock.tick(FPS)
 
+
 def start_screen():
     pg.display.set_caption('hello hello')
-    intro_text = ["ЗАСТАВКА", "",
+    intro_text = ["LINES GAME", "",
                   "",
                   "",
                   "[PRESS ANY BUTTON TO START]"]
@@ -91,12 +95,15 @@ def start_screen():
         pg.display.flip()
         clock.tick(FPS)
 
+
 start_screen()
 
 screen.fill(pg.Color(0, 0, 0))
 pg.display.flip()
 clock.tick(FPS)
 ###
+
+
 class Lines:
     def __init__(self):
         pg.init()
